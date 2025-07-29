@@ -1,6 +1,7 @@
 package com.smartlearning.platform.service;
 
 import com.smartlearning.platform.model.User;
+
 import com.smartlearning.platform.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired; // For dependency injection
 import org.springframework.security.crypto.password.PasswordEncoder; // For password hashing

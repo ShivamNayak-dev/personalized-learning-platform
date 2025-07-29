@@ -1,6 +1,7 @@
 package com.smartlearning.platform.repository;
 
 import com.smartlearning.platform.model.User; // Import our User entity
+
 import org.springframework.data.jpa.repository.JpaRepository; // Import JpaRepository
 import java.util.Optional; // Import Optional for safe null handling
 
