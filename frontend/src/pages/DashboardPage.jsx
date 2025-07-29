@@ -1,5 +1,6 @@
+// frontend/src/pages/DashboardPage.jsx
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // ADD Link here
 
 const DashboardPage = () => {
   const [message, setMessage] = useState('Loading protected content...');
@@ -26,7 +27,6 @@ const DashboardPage = () => {
 
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {
-            // Token invalid or expired, force re-login
             localStorage.removeItem('jwtToken');
             navigate('/login');
             throw new Error('Session expired or unauthorized. Please log in again.');
@@ -35,7 +35,7 @@ const DashboardPage = () => {
           throw new Error(errorText || 'Failed to fetch protected data.');
         }
 
-        const data = await response.text(); // Assuming protected endpoint returns plain text
+        const data = await response.text();
         setMessage(data);
 
       } catch (err) {
@@ -46,11 +46,11 @@ const DashboardPage = () => {
     };
 
     fetchProtectedData();
-  }, [navigate]); // navigate is a dependency of useEffect
+  }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('jwtToken'); // Clear the token
-    navigate('/login'); // Redirect to login page
+    localStorage.removeItem('jwtToken');
+    navigate('/login');
   };
 
   return (
@@ -65,9 +65,18 @@ const DashboardPage = () => {
         ) : (
           <p className="text-blue-600 font-semibold mb-6">{message}</p>
         )}
+
+        {/* ADD THE LINK TO COURSES HERE */}
+        <Link
+          to="/courses"
+          className="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 inline-block mr-4"
+        >
+          Explore Courses
+        </Link>
+
         <button
           onClick={handleLogout}
-          className="mt-6 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className="mt-6 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline cursor-pointer transition duration-300"
         >
           Logout
         </button>

@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import './index.css'; // Make sure your main CSS is imported here
 
+
 function App() {
   // App component acts as a layout. Content from nested routes will render in <Outlet />
   return (

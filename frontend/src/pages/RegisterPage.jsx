@@ -94,7 +94,7 @@ const RegisterPage = () => {
           <div className="flex items-center justify-between">
             <button
               type="submit"
-              className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+              className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full cursor-pointer"
             >
               Register
             </button>
