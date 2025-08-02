@@ -1,33 +1,37 @@
 // frontend/src/components/CourseList.jsx
+
 import React, { useState, useEffect } from 'react';
-import courseService from '../services/course.service'; // Import our new service
+// The useNavigate hook is used to programmatically change the URL.
+import { useNavigate } from 'react-router-dom'; 
+import courseService from '../services/course.service'; 
 
 const CourseList = () => {
+  // State variables for managing data, loading, and errors.
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Get the navigate function from the hook to use for button clicks.
+  const navigate = useNavigate();
 
+  // useEffect hook to fetch data when the component first mounts.
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const data = await courseService.getAllCourses();
-        setCourses(data);
+        setCourses(data); // Update state with the fetched courses.
       } catch (err) {
         console.error("Error fetching courses:", err);
         setError("Failed to load courses. Please try again later.");
-        // Optionally, handle specific error codes like 401 for re-login
-        if (err.message && (err.message.includes('401') || err.message.includes('403'))) {
-            // You might want to navigate to login here if the token is invalid/expired
-            // Example: navigate('/login');
-        }
       } finally {
-        setLoading(false);
+        setLoading(false); // Stop the loading state regardless of success or failure.
       }
     };
 
     fetchCourses();
-  }, []); // Empty dependency array means this effect runs once on component mount
+  }, []); // The empty dependency array means this effect runs only once.
 
+  // --- Conditional Rendering based on state ---
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
@@ -51,26 +55,23 @@ const CourseList = () => {
     return (
       <div className="flex flex-col justify-center items-center min-h-[60vh] text-center p-4">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">No Courses Available</h2>
-        <p className="text-gray-600">It looks like there are no courses yet. Check back later or add one if you have admin access!</p>
-        {/* Optional: Add a button to navigate to the Add Course page */}
-        {/* <button className="mt-6 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition duration-300">
-          Add First Course
-        </button> */}
+        <p className="text-gray-600">It looks like there are no courses yet. Check back later!</p>
       </div>
     );
   }
 
+  // --- Main Component Render ---
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-extrabold text-gray-900 mb-8 text-center">Explore Our Courses</h1>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {/* The map function iterates through the 'courses' array to render a card for each course. */}
         {courses.map(course => (
           <div
             key={course.id}
             className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-200"
           >
-            {/* Course Image */}
+            {/* Course Image section */}
             <div className="relative h-48 sm:h-56 lg:h-64 overflow-hidden">
               <img
                 src={course.imageUrl || 'https://via.placeholder.com/400x250?text=Course+Image'}
@@ -82,8 +83,8 @@ const CourseList = () => {
               </div>
             </div>
 
-            {/* Course Details */}
-            <div className="p-5 flex flex-col justify-between h-[calc(100%-12rem)] sm:h-[calc(100%-14rem)] lg:h-[calc(100%-16rem)]"> {/* Adjust height calculation based on image */}
+            {/* Course Details section */}
+            <div className="p-5 flex flex-col justify-between h-[calc(100%-12rem)] sm:h-[calc(100%-14rem)] lg:h-[calc(100%-16rem)]">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2 truncate">
                   {course.title}
@@ -92,8 +93,9 @@ const CourseList = () => {
                   {course.description}
                 </p>
               </div>
-
-              <div className="mt-auto"> {/* Pushes content to the bottom */}
+              
+              {/* Other course meta data (instructor, duration, etc.) */}
+              <div className="mt-auto">
                 <div className="flex items-center text-gray-700 text-sm mb-2">
                   <svg className="w-4 h-4 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                   <span>{course.instructor}</span>
@@ -106,9 +108,12 @@ const CourseList = () => {
                   <svg className="w-4 h-4 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                   <span>Difficulty: {course.difficulty}</span>
                 </div>
-
-                {/* Action Buttons (e.g., View Details, Enroll - will add Edit/Delete later) */}
-                <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
+                
+                {/* Action button. The onClick handler uses navigate to go to the details page. */}
+                <button 
+                  onClick={() => navigate(`/courses/${course.id}`)}
+                  className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition duration-300"
+                >
                   View Details
                 </button>
               </div>
