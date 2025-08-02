@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/courses")
+@RequestMapping("/api/courses/")
 @CrossOrigin(origins = "http://localhost:5173") // Allow requests from your frontend
 public class CourseController {
 

@@ -35,7 +35,11 @@ public class UserDetailsImpl implements UserDetails {
     public static UserDetailsImpl build(User user) {
         // For simplicity, we'll map a single role string to a SimpleGrantedAuthority
         // For multiple roles, you would iterate and add them to a list.
-        GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole());
+        // --- THIS IS THE CRUCIAL CHANGE ---
+        // Ensure the role is prefixed with "ROLE_"
+        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole());
+        // --- END OF CRUCIAL CHANGE ---
+
         return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
