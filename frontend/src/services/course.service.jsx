@@ -1,32 +1,28 @@
 // frontend/src/services/course.service.jsx
 
-const API_URL = 'http://localhost:8080/api/courses/'; // Base URL for course endpoints
+// Base URL for course endpoints
+const API_URL = 'http://localhost:8080/api/courses/';
+
+// Base URL for enrollment endpoints
+const ENROLLMENTS_API_URL = 'http://localhost:8080/api/enrollments/';
 
 // Helper function to get the authorization header from localStorage
 const getAuthHeader = () => {
   const jwtToken = localStorage.getItem('jwtToken');
-  console.log("getAuthHeader - jwtToken from localStorage:", jwtToken); // Debug log
   if (jwtToken) {
-    // Ensure there are no extra spaces or invalid characters
-    const header = { 'Authorization': `Bearer ${jwtToken.trim()}` };
-    console.log("getAuthHeader - Constructed Header:", header); // Debug log
-    return header;
+    return { 'Authorization': `Bearer ${jwtToken.trim()}` };
   }
-  console.log("getAuthHeader - No JWT token found in localStorage."); // Debug log
   return {};
 };
 
 class CourseService {
-  // Fetches all courses
+  // Fetches all courses from the API (protected endpoint)
   async getAllCourses() {
     try {
-      // Get the header just before making the fetch call to ensure it's fresh
       const headers = {
         'Content-Type': 'application/json',
-        ...getAuthHeader(), // Include the JWT token for authentication
+        ...getAuthHeader(),
       };
-      console.log("getAllCourses - Request Headers:", headers); // Debug log
-
       const response = await fetch(API_URL, {
         method: 'GET',
         headers: headers,
@@ -44,7 +40,7 @@ class CourseService {
     }
   }
 
-  // ... (other methods like getCourseById, createCourse, updateCourse, deleteCourse remain the same) ...
+  // Fetches a single course by its ID (protected endpoint)
   async getCourseById(id) {
     try {
       const headers = {
@@ -68,6 +64,7 @@ class CourseService {
     }
   }
 
+  // Creates a new course (protected endpoint)
   async createCourse(courseData) {
     try {
       const headers = {
@@ -92,6 +89,7 @@ class CourseService {
     }
   }
 
+  // Updates an existing course (protected endpoint)
   async updateCourse(id, courseData) {
     try {
       const headers = {
@@ -116,6 +114,7 @@ class CourseService {
     }
   }
 
+  // Deletes a course (protected endpoint)
   async deleteCourse(id) {
     try {
       const headers = {
@@ -137,6 +136,53 @@ class CourseService {
       return response.json();
     } catch (error) {
       console.error('Error in deleteCourse:', error);
+      throw error;
+    }
+  }
+
+  // Sends a POST request to enroll the authenticated user in a specific course.
+  async enrollInCourse(courseId) {
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        ...getAuthHeader(),
+      };
+      
+      const response = await fetch(`${ENROLLMENTS_API_URL}${courseId}`, {
+        method: 'POST',
+        headers: headers,
+      });
+
+      if (!response.ok) {
+        // Read the error message from the response body
+        const errorText = await response.text();
+        throw new Error(`HTTP Error! Status: ${response.status}, Message: ${errorText}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error in enrollInCourse:', error);
+      throw error;
+    }
+  }
+
+  // HIGHLIGHT: THIS IS THE MISSING METHOD
+  async getEnrolledCourses() {
+    try {
+      const headers = getAuthHeader();
+      const response = await fetch(`${ENROLLMENTS_API_URL}my-courses`, {
+        method: 'GET',
+        headers: headers,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP Error! Status: ${response.status}, Message: ${errorText}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error in getEnrolledCourses:', error);
       throw error;
     }
   }
