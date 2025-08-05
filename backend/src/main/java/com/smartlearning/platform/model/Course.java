@@ -1,40 +1,44 @@
 package com.smartlearning.platform.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name="courses")
+@Table(name = "courses")
+// HIGHLIGHT: Add this annotation to ignore the back-reference to enrollments and lazy-loading fields
+@JsonIgnoreProperties({"enrollments", "hibernateLazyInitializer", "handler"})
 public class Course {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
-	@Column(nullable = false)
-	private String title;
-	
-	@Column(columnDefinition = "TEXT")
-	private String description;
-	private String instructor;
-	private String duration;
-	private String difficulty;
-	private Double price;
-	private String imageUrl;
-	
-	public Course() {
-		
-	}
-	
-	public Course(String title, String description, String instructor, String duration, String difficulty, Double price, String imageUrl) {
-		this.title = title;
-        this.description = description;
-        this.instructor = instructor;
-        this.duration = duration;
-        this.difficulty = difficulty;
-        this.price = price;
-        this.imageUrl = imageUrl;
-	}
-	
-	// Getters and Setters (Generate these if your IDE doesn't do it automatically)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String description;
+
+    private String instructor;
+
+    private String duration;
+
+    private String difficulty;
+
+    private Double price;
+
+    private String imageUrl;
+
+    // HIGHLIGHT: This is the back-reference to the Enrollments
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Enrollment> enrollments = new HashSet<>();
+
+    // Default constructor
+    public Course() {}
+
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -98,6 +102,13 @@ public class Course {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
-	
-	
+    
+    // HIGHLIGHT: Getter and setter for enrollments
+    public Set<Enrollment> getEnrollments() {
+        return enrollments;
+    }
+
+    public void setEnrollments(Set<Enrollment> enrollments) {
+        this.enrollments = enrollments;
+    }
 }
